@@ -1,6 +1,7 @@
 const express = require('express')
 const pug = require('pug');
 const twit = require('twit');
+const config = require('./config');
 
 const port = 3030;
 
