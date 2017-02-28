@@ -22,7 +22,7 @@ const directMessages = [];
 
 
 app.get('/', function(req, res) {
-    res.render('main.pug');
+    res.render('main.pug', {profile: twitterProfile, tweets: tweets, friends: friendsList, messages: directMessages});
 });
 
 //get five most recent tweets
@@ -33,16 +33,17 @@ T.get('statuses/user_timeline', {
     data.forEach(tweet => {
 
         let userTweet = {}
-        userTweet.Tweet = tweet.text;
-        userTweet.Date = tweet.created_at;
-        userTweet.Retweets = tweet.retweet_count;
-        userTweet.Favorites = tweet.favorite_count;
+        userTweet.text = tweet.text;
+        userTweet.created_at = tweet.created_at;
+        userTweet.retweet_count = tweet.retweet_count;
+        userTweet.favorite_count = tweet.favorite_count;
+        userTweet.profile_image_url = tweet.user.profile_image_url;
         tweets.push(userTweet);
-    //     console.log(`${tweet.text}`);
-    //     console.log(`Originally tweeted on: ${tweet.created_at}`);
-    //     console.log(`Number of retweets: ${tweet.retweet_count}`);
-    //     console.log(`Favorited: ${tweet.favorite_count} times${os.EOL}`);
-     });
+        //     console.log(`${tweet.text}`);
+        //     console.log(`Originally tweeted on: ${tweet.created_at}`);
+        //     console.log(`Number of retweets: ${tweet.retweet_count}`);
+        //     console.log(`Favorited: ${tweet.favorite_count} times${os.EOL}`);
+    });
     console.log(tweets);
 });
 
@@ -82,16 +83,16 @@ T.get('friends/list', {
 
 //get most recent direct messages
 T.get('direct_messages', (error, data) => {
-  console.log(`${os.EOL}YOUR MOST RECENT DIRECT MESSAGES: ${os.EOL}`);
-  data.forEach(message => {
-    let messages = {};
-    messages.Message = message.text;
-    messages.Name = message.sender.name;
-    messages.ProfileImage = message.sender.profile_image_url;
-    messages.Date = message.sender.created_at;
-    directMessages.push(messages);
-  });
-  console.log(directMessages);
+    console.log(`${os.EOL}YOUR MOST RECENT DIRECT MESSAGES: ${os.EOL}`);
+    data.forEach(message => {
+        let messages = {};
+        messages.Message = message.text;
+        messages.Name = message.sender.name;
+        messages.ProfileImage = message.sender.profile_image_url;
+        messages.Date = message.sender.created_at;
+        directMessages.push(messages);
+    });
+    console.log(directMessages);
 });
 
 
