@@ -6,7 +6,6 @@ const config = require('../config.js');
 
 const port = 3030;
 
-
 const app = express();
 var T = new twit(config);
 
@@ -21,9 +20,12 @@ const twitterProfile = [];
 const directMessages = [];
 
 
+
 app.get('/', function(req, res) {
     res.render('main.pug', {profile: twitterProfile, tweets: tweets, friends: friendsList, messages: directMessages});
 });
+
+
 
 //get five most recent tweets
 T.get('statuses/user_timeline', {
@@ -31,21 +33,19 @@ T.get('statuses/user_timeline', {
 }, (error, data) => {
     console.log(`${os.EOL}YOUR MOST RECENT TWEETS: ${os.EOL}`);
     data.forEach(tweet => {
-
         let userTweet = {}
         userTweet.text = tweet.text;
         userTweet.created_at = tweet.created_at;
         userTweet.retweet_count = tweet.retweet_count;
         userTweet.favorite_count = tweet.favorite_count;
         userTweet.profile_image_url = tweet.user.profile_image_url;
+        userTweet.name = tweet.user.name;
+        userTweet.screen_name = tweet.user.screen_name;
         tweets.push(userTweet);
-        //     console.log(`${tweet.text}`);
-        //     console.log(`Originally tweeted on: ${tweet.created_at}`);
-        //     console.log(`Number of retweets: ${tweet.retweet_count}`);
-        //     console.log(`Favorited: ${tweet.favorite_count} times${os.EOL}`);
     });
     console.log(tweets);
 });
+
 
 
 //get user profile information
@@ -53,15 +53,14 @@ T.get('account/verify_credentials', (error, data) => {
 
     let profileData = {};
     profileData.name = data.name;
-    profileData.screenName = data.screen_name;
-    profileData.profileImage = data.profile_image_url;
+    profileData.screen_name = data.screen_name;
+    profileData.profile_image_url = data.profile_image_url;
+    profileData.friends_count = data.friends_count;
     console.log(`${os.EOL}YOUR PROFILE INFORMATION IS: ${os.EOL}`);
-    // console.log(data.name);
-    // console.log(data.screen_name);
-    // console.log(data.profile_image_url);
     console.log(profileData);
     twitterProfile.push(profileData);
 });
+
 
 
 //get five most recent frinds
@@ -71,14 +70,14 @@ T.get('friends/list', {
     console.log(`${os.EOL}YOUR MOST RECENT FRIENDS ARE: ${os.EOL}`);
     data.users.forEach(user => {
         let friends = {};
-        friends.ScreenName = user.screen_name;
-        friends.Name = user.name;
-        friends.ProfileImage = user.profile_image_url;
+        friends.screen_name = user.screen_name;
+        friends.name = user.name;
+        friends.profile_image_url = user.profile_image_url;
         friendsList.push(friends);
-        //console.log(`${user.screen_name} ${os.EOL}`);
     });
     console.log(friendsList);
 });
+
 
 
 //get most recent direct messages
@@ -86,14 +85,16 @@ T.get('direct_messages', (error, data) => {
     console.log(`${os.EOL}YOUR MOST RECENT DIRECT MESSAGES: ${os.EOL}`);
     data.forEach(message => {
         let messages = {};
-        messages.Message = message.text;
-        messages.Name = message.sender.name;
-        messages.ProfileImage = message.sender.profile_image_url;
-        messages.Date = message.sender.created_at;
+        messages.text = message.text;
+        messages.name = message.sender.name;
+        messages.profile_image_url = message.sender.profile_image_url;
+        messages.created_at = message.sender.created_at;
         directMessages.push(messages);
     });
     console.log(directMessages);
 });
+
+
 
 
 app.listen(port, () => {

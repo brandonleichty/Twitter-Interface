@@ -7,8 +7,8 @@
           a.app--tweet--author
             .app--avatar(style='background-image: url(' + tweet.profile_image_url + ')')
               img(src='images/f-spore.png')
-            h4 Jill Spore
-            |  @jillspore
+            h4 #{tweet.name}
+            |  @#{tweet.screen_name}
           p #{tweet.text}
           ul.app--tweet--actions.circle--list--inline
             li
