@@ -3,7 +3,7 @@
     ul.app--tweet--list
       li
         each tweet in tweets
-          strong.app--tweet--timestamp 4h
+          strong.app--tweet--timestamp #{tweet.created_at}
           a.app--tweet--author
             .app--avatar(style='background-image: url(' + tweet.profile_image_url + ')')
               img(src='images/f-spore.png')

@@ -23,7 +23,12 @@ const directMessages = [];
 
 
 app.get('/', function(req, res) {
-    res.render('main.pug', {profile: twitterProfile, tweets: tweets, friends: friendsList, messages: directMessages});
+    res.render('main.pug', {
+        profile: twitterProfile,
+        tweets: tweets,
+        friends: friendsList,
+        messages: directMessages
+    });
 });
 
 
@@ -36,13 +41,14 @@ T.get('statuses/user_timeline', {
     data.forEach(tweet => {
         let userTweet = {}
         userTweet.text = tweet.text;
-        userTweet.created_at = tweet.created_at;
+        userTweet.created_at = moment(tweet.created_at).format('M/DD/YY');
         userTweet.retweet_count = tweet.retweet_count;
         userTweet.favorite_count = tweet.favorite_count;
         userTweet.profile_image_url = tweet.user.profile_image_url;
         userTweet.name = tweet.user.name;
         userTweet.screen_name = tweet.user.screen_name;
         tweets.push(userTweet);
+        console.log(`Sent: ${moment(tweet.created_at).format('M/DD/YY')}`);
     });
     console.log(tweets);
 });
@@ -89,7 +95,7 @@ T.get('direct_messages', (error, data) => {
         messages.text = message.text;
         messages.name = message.sender.name;
         messages.profile_image_url = message.sender.profile_image_url;
-        messages.created_at = message.sender.created_at;
+        messages.created_at = moment(message.created_at).format('M/DD/YY');
         directMessages.push(messages);
     });
     console.log(directMessages);

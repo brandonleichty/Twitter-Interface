@@ -10,4 +10,4 @@
               .app--avatar(style='background-image: url(' + message.profile_image_url + ')')
                 img(src='images/f-spore.png')
               p.app--message--text #{message.text}
-              p.app--message--timestamp 3 hours ago
+              p.app--message--timestamp #{message.created_at}
