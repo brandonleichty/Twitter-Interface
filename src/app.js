@@ -1,23 +1,26 @@
 const express = require('express')
 const pug = require('pug');
 const twit = require('twit');
+const moment = require('moment');
 const os = require('os');
 const config = require('../config.js');
-const moment = require('moment');
 
 const port = 3030;
+
+const currentDate = moment().format('MM/DD/YYYY');
 
 const app = express();
 var T = new twit(config);
 
-
+//Sets the view and templte engine
 app.set('view engine', 'pug');
 app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 
+//Variables that store the information retrieved by the Twit/GET request
 const tweets = [];
 const friendsList = [];
-const twitterProfile = [];
+const twitterProfile = {};
 const directMessages = [];
 
 
@@ -33,7 +36,10 @@ app.get('/', function(req, res) {
 
 
 
-//get five most recent tweets
+//Twit GET function thats retrieves the five most recent tweets of the given user.
+//The text, retweet count, number of favorites, profile image, screen name, and username are collected...
+//...for each Tweet and then then added to the userTweet object (which will then be injected into the template).
+//Moment is used to calculate and display the proper date/time.
 T.get('statuses/user_timeline', {
     count: 5
 }, (error, data) => {
@@ -41,36 +47,42 @@ T.get('statuses/user_timeline', {
     data.forEach(tweet => {
         let userTweet = {}
         userTweet.text = tweet.text;
-        userTweet.created_at = moment(tweet.created_at).format('M/DD/YY');
         userTweet.retweet_count = tweet.retweet_count;
         userTweet.favorite_count = tweet.favorite_count;
         userTweet.profile_image_url = tweet.user.profile_image_url;
         userTweet.name = tweet.user.name;
         userTweet.screen_name = tweet.user.screen_name;
+        //userTweet.created_at = moment(tweet.created_at).format('M/DD/YY')
+
+        if(moment(tweet.created_at).format('MM/DD/YYYY') === currentDate){
+          userTweet.created_at = moment(tweet.created_at).fromNow();
+          console.log('TWEET TWEET');
+          console.log(`Sent: ${moment(tweet.created_at).fromNow()}`);
+        } else {
+          userTweet.created_at = moment(tweet.created_at).format('M/DD/YY');
+          console.log(`Current date: ${currentDate}`);
+          console.log(`Sent: ${moment(tweet.created_at).format('M/DD/YY')}`);
+        }
+
         tweets.push(userTweet);
-        console.log(`Sent: ${moment(tweet.created_at).format('M/DD/YY')}`);
+
     });
     console.log(tweets);
 });
 
 
-
-//get user profile information
+//Gets user profile information and adds it to the twitterProfile object to be injected into the pug/Jade template
 T.get('account/verify_credentials', (error, data) => {
-
-    let profileData = {};
-    profileData.name = data.name;
-    profileData.screen_name = data.screen_name;
-    profileData.profile_image_url = data.profile_image_url;
-    profileData.friends_count = data.friends_count;
+    twitterProfile.name = data.name;
+    twitterProfile.screen_name = data.screen_name;
+    twitterProfile.profile_image_url = data.profile_image_url;
+    twitterProfile.friends_count = data.friends_count;
     console.log(`${os.EOL}YOUR PROFILE INFORMATION IS: ${os.EOL}`);
-    console.log(profileData);
-    twitterProfile.push(profileData);
+    console.log(twitterProfile);
 });
 
 
-
-//get five most recent frinds
+//Gets five most recent friends/follows for a given user and stores them in the "friend" object.
 T.get('friends/list', {
     count: 5
 }, (error, data) => {
@@ -86,16 +98,26 @@ T.get('friends/list', {
 });
 
 
-
-//get most recent direct messages
-T.get('direct_messages', (error, data) => {
+//Gets five most recent direct for a given user and stores them in the "friend" object.
+T.get('direct_messages', {
+  count: 5
+  }, (error, data) => {
     console.log(`${os.EOL}YOUR MOST RECENT DIRECT MESSAGES: ${os.EOL}`);
     data.forEach(message => {
         let messages = {};
         messages.text = message.text;
         messages.name = message.sender.name;
         messages.profile_image_url = message.sender.profile_image_url;
-        messages.created_at = moment(message.created_at).format('M/DD/YY');
+
+        if(moment(message.created_at).format('MM/DD/YYYY') === currentDate){
+          messages.created_at = moment(message.created_at).fromNow();
+          console.log('THIS WORKED!!!');
+          console.log(`Sent: ${moment(message.created_at).fromNow()}`);
+        } else {
+          messages.created_at = moment(message.created_at).format('M/DD/YY');
+          console.log(`Current date: ${currentDate}`);
+          console.log(`Sent: ${moment(message.created_at).format('M/DD/YY')}`);
+        }
         directMessages.push(messages);
     });
     console.log(directMessages);
@@ -103,7 +125,7 @@ T.get('direct_messages', (error, data) => {
 
 
 
-
+//listen on port 3030
 app.listen(port, () => {
     console.log('The server is now running on port 3030. Press CTRL+C to quit.');
 });
