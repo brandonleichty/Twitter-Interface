@@ -1,3 +1,4 @@
+//Dependencies
 const express = require('express')
 const pug = require('pug');
 const twit = require('twit');
@@ -52,18 +53,20 @@ T.get('statuses/user_timeline', {
         userTweet.profile_image_url = tweet.user.profile_image_url;
         userTweet.name = tweet.user.name;
         userTweet.screen_name = tweet.user.screen_name;
-        //userTweet.created_at = moment(tweet.created_at).format('M/DD/YY')
 
-        if(moment(tweet.created_at).format('MM/DD/YYYY') === currentDate){
-          userTweet.created_at = moment(tweet.created_at).fromNow();
-          console.log('TWEET TWEET');
-          console.log(`Sent: ${moment(tweet.created_at).fromNow()}`);
+        //If the Tweet was sent on current day, display how long ago it was sent
+        if(moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('MM/DD/YYYY') === currentDate){
+          userTweet.created_at = moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').fromNow();
+          // console.log('TWEET TWEET');
+          // console.log(`Sent: ${moment(tweet.created_at).fromNow()}`);
+          //Else if the tweet was was NOT sent on current day (today), show the day it was sent
         } else {
-          userTweet.created_at = moment(tweet.created_at).format('M/DD/YY');
-          console.log(`Current date: ${currentDate}`);
-          console.log(`Sent: ${moment(tweet.created_at).format('M/DD/YY')}`);
+          userTweet.created_at = moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('M/DD/YY');
+          // console.log(`Current date: ${currentDate}`);
+          // console.log(`Sent: ${moment(tweet.created_at)}`);
         }
 
+        // ddd MMM D YYYY h:mm:ss
         tweets.push(userTweet);
 
     });
@@ -98,6 +101,8 @@ T.get('friends/list', {
 });
 
 
+
+
 //Gets five most recent direct for a given user and stores them in the "friend" object.
 T.get('direct_messages', {
   count: 5
@@ -109,14 +114,12 @@ T.get('direct_messages', {
         messages.name = message.sender.name;
         messages.profile_image_url = message.sender.profile_image_url;
 
-        if(moment(message.created_at).format('MM/DD/YYYY') === currentDate){
-          messages.created_at = moment(message.created_at).fromNow();
-          console.log('THIS WORKED!!!');
-          console.log(`Sent: ${moment(message.created_at).fromNow()}`);
+        //If the message was sent on current day, display how long ago it was sent
+        if(moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('MM/DD/YYYY') === currentDate){
+          messages.created_at = moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').fromNow();
+        //Else if the message was was NOT sent on current day (today), show the day it was sent
         } else {
-          messages.created_at = moment(message.created_at).format('M/DD/YY');
-          console.log(`Current date: ${currentDate}`);
-          console.log(`Sent: ${moment(message.created_at).format('M/DD/YY')}`);
+          messages.created_at = moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('M/DD/YY');
         }
         directMessages.push(messages);
     });
