@@ -12,8 +12,10 @@ const moment = require('moment');
 const os = require('os');
 const config = require('../config.js');
 
+//Port to run app on:
 const port = 3030;
 
+//Variable to hold current date
 const currentDate = moment().format('MM/DD/YYYY');
 
 const app = express();
@@ -31,7 +33,7 @@ const twitterProfile = {};
 const directMessages = [];
 
 
-
+//route route
 app.get('/', function(req, res) {
     res.render('main.pug', {
         profile: twitterProfile,
