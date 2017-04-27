@@ -1,3 +1,9 @@
+//TWITTER INTERFACE
+//In order to use this Express app you'll need to:
+// 1) Add your own Twitter keys and access tokens to the config.js file
+// 2) Remove the ".example" from the config.js.example file. It should be titled "config.js"
+
+
 //Dependencies
 const express = require('express')
 const pug = require('pug');
@@ -44,7 +50,6 @@ app.get('/', function(req, res) {
 T.get('statuses/user_timeline', {
     count: 5
 }, (error, data) => {
-    console.log(`${os.EOL}YOUR MOST RECENT TWEETS: ${os.EOL}`);
     data.forEach(tweet => {
         let userTweet = {}
         userTweet.text = tweet.text;
@@ -54,24 +59,23 @@ T.get('statuses/user_timeline', {
         userTweet.name = tweet.user.name;
         userTweet.screen_name = tweet.user.screen_name;
 
-        //If the Tweet was sent on current day, display how long ago it was sent
-        if(moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('MM/DD/YYYY') === currentDate){
-          userTweet.created_at = moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').fromNow();
-          // console.log('TWEET TWEET');
-          // console.log(`Sent: ${moment(tweet.created_at).fromNow()}`);
-          //Else if the tweet was was NOT sent on current day (today), show the day it was sent
+        //Takes the UTC time stamp from the given tweet and tells Moment what the format is: "Wed Aug 27 13:08:45 +0000 2008"
+        //If the tweet was from the current day, the fromNow() method is used to displays how many seconds, minutes, or hours ago the tweet occured.
+        //Otherwise, the date is displayed and formated as 'M/DD/YY'
+        if (moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('MM/DD/YYYY') === currentDate) {
+            userTweet.created_at = moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').fromNow();
+
+            //Else if the tweet was was NOT sent on the current day (today), show the day/date it was sent.
         } else {
-          userTweet.created_at = moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('M/DD/YY');
-          // console.log(`Current date: ${currentDate}`);
-          // console.log(`Sent: ${moment(tweet.created_at)}`);
+            userTweet.created_at = moment(tweet.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('M/DD/YY');
         }
 
-        // ddd MMM D YYYY h:mm:ss
+        //push Tweet information (userTweet) to "tweets" object
         tweets.push(userTweet);
 
     });
-    console.log(tweets);
 });
+
 
 
 //Gets user profile information and adds it to the twitterProfile object to be injected into the pug/Jade template
@@ -80,16 +84,14 @@ T.get('account/verify_credentials', (error, data) => {
     twitterProfile.screen_name = data.screen_name;
     twitterProfile.profile_image_url = data.profile_image_url;
     twitterProfile.friends_count = data.friends_count;
-    console.log(`${os.EOL}YOUR PROFILE INFORMATION IS: ${os.EOL}`);
-    console.log(twitterProfile);
 });
+
 
 
 //Gets five most recent friends/follows for a given user and stores them in the "friend" object.
 T.get('friends/list', {
     count: 5
 }, (error, data) => {
-    console.log(`${os.EOL}YOUR MOST RECENT FRIENDS ARE: ${os.EOL}`);
     data.users.forEach(user => {
         let friends = {};
         friends.screen_name = user.screen_name;
@@ -97,38 +99,36 @@ T.get('friends/list', {
         friends.profile_image_url = user.profile_image_url;
         friendsList.push(friends);
     });
-    console.log(friendsList);
 });
-
 
 
 
 //Gets five most recent direct for a given user and stores them in the "friend" object.
 T.get('direct_messages', {
-  count: 5
-  }, (error, data) => {
-    console.log(`${os.EOL}YOUR MOST RECENT DIRECT MESSAGES: ${os.EOL}`);
+    count: 5
+}, (error, data) => {
     data.forEach(message => {
         let messages = {};
         messages.text = message.text;
         messages.name = message.sender.name;
         messages.profile_image_url = message.sender.profile_image_url;
 
-        //If the message was sent on current day, display how long ago it was sent
-        if(moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('MM/DD/YYYY') === currentDate){
-          messages.created_at = moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').fromNow();
-        //Else if the message was was NOT sent on current day (today), show the day it was sent
+        //Takes the UTC time stamp from the given message and tells Moment what the format is: "Wed Aug 27 13:08:45 +0000 2008"
+        //If the message was from the current day, the fromNow() method is used to displays how many seconds, minutes, or hours ago the tweet occured.
+        //Otherwise, the date is displayed and formated as 'M/DD/YY'
+        if (moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('MM/DD/YYYY') === currentDate) {
+            messages.created_at = moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').fromNow();
+            //Else if the message was was NOT sent on current day (today), show the day it was sent
         } else {
-          messages.created_at = moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('M/DD/YY');
+            messages.created_at = moment(message.created_at, 'ddd MMM D h:mm:ss ZZ YYYY').format('M/DD/YY');
         }
         directMessages.push(messages);
     });
-    console.log(directMessages);
 });
 
 
 
 //listen on port 3030
 app.listen(port, () => {
-    console.log('The server is now running on port 3030. Press CTRL+C to quit.');
+    console.log(`${os.EOL}The server is now running on port 3030. ${os.EOL}Open your browser and go to: http://localhost:3030/ ${os.EOL}Press CTRL+C to quit.${os.EOL}`);
 });
