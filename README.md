@@ -2,6 +2,12 @@
 
 Treehouse Techdegree Project 7
 
+INSTRUCTIONS:
+In order to use this Express app you'll need to:
+1) Add your own Twitter keys and access tokens to the config.js file
+2) Remove the ".example" from the config.js.example file. It should be titled "config.js"
+
+
 Many existing services like Twitter, Facebook, Google Maps, Paypal, and Github allow you to leverage their code in your own applications by talking to their APIs. Using Node to connect to 3rd party APIs provides much greater control than using just AJAX. Server-side communication with APIs offers many more options and greater access to data, but it also require stricter authentication methods.
 
 In this project, you'll use Twitter’s REST API to access your Twitter profile information and render it to a user. The page should automatically authenticate access to your Twitter profile. It should use this access to populate three columns on your page:
