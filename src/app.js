@@ -105,7 +105,7 @@ T.get('friends/list', {
 
 
 
-//Gets five most recent direct for a given user and stores them in the "friend" object.
+//Gets five most recent direct messages for a given user and stores them in the "messages" object.
 T.get('direct_messages', {
     count: 5
 }, (error, data) => {
